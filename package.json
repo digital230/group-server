@@ -6,6 +6,7 @@
     "start": "babel-watch --presets es2015 app.js"
   },
   "dependencies": {
+    "@mobylogix/node-random": "^0.1.1",
     "bluebird": "^3.5.1",
     "body-parser": "~1.18.2",
     "cookie-parser": "~1.4.3",
@@ -14,8 +15,10 @@
     "jade": "~1.11.0",
     "mongoose": "^4.13.7",
     "morgan": "~1.9.0",
+    "require-dir": "^0.3.2",
     "serve-favicon": "~2.4.5",
-    "socket.io": "^2.0.4"
+    "socket.io": "^2.0.4",
+    "underscore": "^1.8.3"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
