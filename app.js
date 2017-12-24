@@ -66,6 +66,12 @@ app.post('/emailVerification', function(req, res) {
   auth.verified(req.body, res);
 })
 
+app.post('/login', function(req, res) {
+  const mailer = new Mailer();
+  const auth = new Auth(dbPromise, mailer);
+  auth.login(req.body, res);
+})
+
 io.on('connection', socket => {
   console.log('socket connected');
 

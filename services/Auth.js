@@ -9,8 +9,51 @@ class Auth {
     this.User = db.model('User');
   }
 
-  login() {
+  login(data, res) {
+    const {User} = this;
+    let self = this;
 
+    User.findOne(data, function(err, resp) {
+      if (err) {
+        res.json({
+          error: true,
+          verified: undefined,
+          alreadyPresent: true,
+          message: 'Error',
+          data: err,
+          status: 200
+        });
+      } else {
+        console.log(resp)
+        if (!_.isEmpty(resp) && resp.verified === true) {
+          let encryptUser = jwt.sign(JSON.stringify(resp), '6A586E327235753878214125442A472D');
+          res.json({
+            error: false,
+            verified: true,
+            message: 'loged in',
+            data: encryptUser,
+            status: 200
+          });
+        } else if (!_.isEmpty(resp) && resp.verified === false) {
+          self.sendVerificationEmail(resp, res);
+          res.json({
+            error: false,
+            verified: false,
+            message: 'Email sent',
+            data: {},
+            status: 200
+          });
+        } else {
+          res.json({
+            error: false,
+            verified: undefined,
+            message: 'Email sent',
+            data: {},
+            status: 200
+          });
+        }
+      }
+    })
   }
 
   register(data, res) {
