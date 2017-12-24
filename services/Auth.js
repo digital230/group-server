@@ -1,8 +1,11 @@
 import {_} from 'underscore';
+import jwt from 'jsonwebtoken';
+import Random from '@mobylogix/node-random';
 
 class Auth {
-  constructor(db) {
+  constructor(db, mailer) {
     this.db = db;
+    this.mailerService = mailer;
     this.User = db.model('User');
   }
 
@@ -14,6 +17,43 @@ class Auth {
     const {User} = this;
     emptyChecker(data, res);
 
+    new Promise((resolve, reject) => {
+      return this.ifUserAlreadyPresent(data, resolve, reject);
+    })
+    .then((user) => {
+      if (user) {
+        res.json({
+          error: false,
+          alreadyPresent: true,
+          message: 'account already present',
+          data: user,
+          status: 200
+        });
+      } else {
+        this.registerUser(data, res);
+      }
+    })
+    .catch(err => console.log(err));
+  }
+
+  ifUserAlreadyPresent(data, resolve, reject){
+    const {User} = this;
+
+    User.findOne({email: data.email}, function(err, resp) {
+      if (err) {
+        reject(err)
+      } else {
+        resolve(resp)
+      }
+    });
+  }
+
+  registerUser(data, res) {
+    const {User} = this;
+    let self = this;
+    data['verified'] = false;
+    data['token'] = Random.id()
+
     User.create(data, function(err, resp) {
       if (err) {
         console.log(err);
@@ -24,7 +64,7 @@ class Auth {
           status: 500
         });
       } else {
-        console.log(resp)
+        self.sendVerificationEmail(resp, res);
         res.json({
           error: false,
           message: 'accout created',
@@ -33,6 +73,60 @@ class Auth {
         });
       }
     });
+  }
+
+  sendVerificationEmail(user, res) {
+    const {mailerService} = this;
+    mailerService.verificationEmail(user, res);
+  }
+
+  verified(data, res) {
+    const {User} = this;
+    emptyChecker(data, res);
+    console.log(data)
+    delete data['iat'];
+
+    User.findOne(data, function(err, resp) {
+      if (err) {
+        res.json({
+          error: true,
+          message: 'some thing went wrong try again',
+          data: err,
+          status: 500
+        });
+      } else {
+        User.update({_id: data._id}, {$set: {verified: true}}, function(err, responce) {
+          if (err) {
+            res.json({
+              error: true,
+              message: 'some thing went wrong try again',
+              data: err,
+              status: 500
+            });
+          } else {
+            User.findOne({_id: data._id}, function(err, result) {
+              if (err) {
+                res.json({
+                  error: true,
+                  message: 'some thing went wrong try again',
+                  data: err,
+                  status: 500
+                });
+              } else {
+                let encryptUser = jwt.sign(JSON.stringify(result), '6A586E327235753878214125442A472D');
+
+                res.json({
+                  error: false,
+                  message: 'account verified',
+                  data: {user: encryptUser, verified: true},
+                  status: 200
+                });
+              }
+            });
+          }
+        });
+      }
+    })
   }
 }
 

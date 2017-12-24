@@ -10,6 +10,7 @@ import index from './routes/index';
 import users from './routes/users';
 //service
 import Auth from './services/Auth';
+import Mailer from './services/Mailer';
 
 require('./models');
 mongoose.Promise = require('bluebird');
@@ -54,8 +55,15 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.post('/register', function(req, res) {
-  const auth = new Auth(dbPromise);
+  const mailer = new Mailer();
+  const auth = new Auth(dbPromise, mailer);
   auth.register(req.body, res);
+})
+
+app.post('/emailVerification', function(req, res) {
+  const mailer = new Mailer();
+  const auth = new Auth(dbPromise, mailer);
+  auth.verified(req.body, res);
 })
 
 io.on('connection', socket => {

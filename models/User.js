@@ -21,6 +21,14 @@ var User = new Schema(
       type: String,
       required: true,
     },
+    token: {
+      type: String,
+      required: true,
+    },
+    verified:{
+      type: Boolean,
+      required: true,
+    },
     profile: {
       type: Object,
     },
