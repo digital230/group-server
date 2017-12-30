@@ -25,8 +25,11 @@ class Mailer {
         from: 'Group <no-reply@connectdex.com>', // sender address
         to: user.email, // list of receivers
         subject: 'Email Verification ✔', // Subject line
-        text: 'yout accoutn has been created please verified your email address', // plain text body
-        html: `<a href={localhost:3000/verified/?token=${encrypt}}>localhost:3000/verified/?token=${encrypt}</a>` // html body
+        text: '', // plain text body
+        html: `<div>
+          <h3>yout accoutn has been created please verified your email address</h3>
+          <a href=http://localhost:3000/verified/?token=${encrypt}>localhost:3000/verified/?token=${encrypt}</a>
+        </div>` // html body
     };
 
     transporter.sendMail(mailOptions, function(error, info) {
