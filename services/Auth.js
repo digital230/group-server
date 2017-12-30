@@ -126,7 +126,6 @@ class Auth {
   verified(data, res) {
     const {User} = this;
     emptyChecker(data, res);
-    console.log(data)
     delete data['iat'];
 
     User.findOne(data, function(err, resp) {
