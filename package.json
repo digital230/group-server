@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "babel-watch --presets es2015 app.js"
+    "start": "babel-watch --presets es2015 app.js .env"
   },
   "dependencies": {
     "@mobylogix/node-random": "^0.1.1",
