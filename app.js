@@ -1,3 +1,4 @@
+require('dotenv').config();
 import express from 'express';
 import path from 'path';
 import logger from 'morgan';
@@ -22,7 +23,7 @@ let port = process.env.PORT || '4000';
 let dbPromise = db();
 
 dbPromise.then((db) => {
-  console.log("DB Connected..");
+  console.log("DB Connected..", db);
 });
 
 // making server

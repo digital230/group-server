@@ -4,7 +4,7 @@ require('../models');
 export function db() {
   mongoose.Promise = require('bluebird');
 
-  const dbPromise = mongoose.connect('mongodb://127.0.0.1:27017/groupie', {
+  const dbPromise = mongoose.connect(process.env.MONGO_URL, {
     useMongoClient: true
   });
 
