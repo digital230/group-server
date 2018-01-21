@@ -24,7 +24,6 @@ class Auth {
           status: 200
         });
       } else {
-        console.log(resp)
         if (!_.isEmpty(resp) && resp.verified === true) {
           let encryptUser = jwt.sign(JSON.stringify(resp), '6A586E327235753878214125442A472D');
           res.json({
