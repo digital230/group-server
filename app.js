@@ -12,14 +12,14 @@ import users from './routes/users';
 import Auth from './services/Auth';
 import Mailer from './services/Mailer';
 
-require('./models');
-mongoose.Promise = require('bluebird');
+// bootstrap
+import {db} from './bootstrap/db';
+import {routerMiddleWare, routerParser} from './bootstrap/routerHelper';
+import authentication from './routes/authentication';
 
 // getting port
-let port = process.env.PORT || '3002';
-const dbPromise = mongoose.createConnection('mongodb://127.0.0.1/groupie', {
-  useMongoClient: true
-});
+let port = process.env.PORT || '4000';
+let dbPromise = db();
 
 dbPromise.then((db) => {
   console.log("DB Connected..");
@@ -31,46 +31,11 @@ const server = http.createServer(app);
 // initializing socket
 const io = socketIo(server, {log: true, origins:'*:*'});
 
-app.use(function(req, res, next) {
-    // Website you wish to allow to connect
-  res.header('Access-Control-Allow-Origin', '*');
+let props = {app, io, dbPromise};
 
-  // Request methods you wish to allow
-  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
-
-  // Request headers you wish to allow
-  res.header('Access-Control-Allow-Headers', 'cache-control,X-Requested-With,Content-Type');
-
-  // Set to true if you need the website to include cookies in the requests sent
-  // to the API (e.g. in case you use sessions)
-  res.header('Access-Control-Allow-Credentials', true);
-
-  // Pass to next layer of middleware
-  next();
-});
-
-
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cookieParser());
-
-app.post('/register', function(req, res) {
-  const mailer = new Mailer();
-  const auth = new Auth(dbPromise, mailer);
-  auth.register(req.body, res);
-})
-
-app.post('/emailVerification', function(req, res) {
-  const mailer = new Mailer();
-  const auth = new Auth(dbPromise, mailer);
-  auth.verified(req.body, res);
-})
-
-app.post('/login', function(req, res) {
-  const mailer = new Mailer();
-  const auth = new Auth(dbPromise, mailer);
-  auth.login(req.body, res);
-})
+routerMiddleWare(props); // set cross origin headers
+routerParser(props); // parse router params, queryparams
+authentication(props); // contains auth related functions
 
 io.on('connection', socket => {
   console.log('socket connected');
