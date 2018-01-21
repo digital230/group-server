@@ -11,7 +11,7 @@ ENV PATH /usr/src/groupie-server/node_modules/.bin:$PATH
 ADD package.json /usr/src/groupie-server/package.json
 RUN npm install
 
-EXPOSE 3002
+EXPOSE 4000
 
 # start app
 CMD ["npm", "start"]
