@@ -23,7 +23,7 @@ let port = process.env.PORT || '4000';
 let dbPromise = db();
 
 dbPromise.then((db) => {
-  console.log("DB Connected..", db);
+  console.log("DB Connected..");
 });
 
 // making server

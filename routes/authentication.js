@@ -20,7 +20,6 @@ export default function authentication({app, dbPromise}) {
   });
 
   app.post('/login', function(req, res) {
-    console.log(req.body)
     const mailer = new Mailer();
     const auth = new Auth(dbPromise, mailer);
     auth.login(req.body, res);
